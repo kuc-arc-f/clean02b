@@ -93,7 +93,50 @@ public class TAB001Activity extends Activity {
 				}
 			});
 		}
-	}
+		public void exec_print04(final String title) {
+			mHandler.post(new Runnable() {
+				public void run() {
+					try
+					{
+						proc_print04(title);
+					}catch(Exception e){
+						e.printStackTrace();
+						m_Util.errorDialog(TAB001Activity.this, e.getMessage());
+					}
+					
+				}
+			});
+		}
+ 		public void exec_print05(final String title) {
+			mHandler.post(new Runnable() {
+				public void run() {
+					try
+					{
+						proc_print05(title);
+					}catch(Exception e){
+						e.printStackTrace();
+						m_Util.errorDialog(TAB001Activity.this, e.getMessage());
+					}
+					
+				}
+			});
+		}		
+ 		public void exec_print06(final String title) {
+			mHandler.post(new Runnable() {
+				public void run() {
+					try
+					{
+						proc_print06(title);
+					}catch(Exception e){
+						e.printStackTrace();
+						m_Util.errorDialog(TAB001Activity.this, e.getMessage());
+					}
+					
+				}
+			});
+		}		
+
+}
     /** Called when the activity is first created. */
 	private class WebViewClientLoading extends WebViewClient {
 	    @Override
@@ -175,12 +218,40 @@ toast.show();
     		m_LIST.add(title1);
     		m_LIST.add(title2);
     		m_LIST.add(title3);
-    		PrintRecieptMini();
+//    		PrintRecieptMini();
+    		PrintRecieptMini_sjis();
     	}catch(Exception e){
     		e.printStackTrace();
     	}
     	
     }
+    //
+	private void get_itemData_sjis(String url, String enc) throws Exception{
+    	try
+    	{
+        	String s = m_Http.doGet(url);
+        	JSONArray arr = new JSONArray( s );
+        	StringBuilder sb =new StringBuilder();
+        	StringBuilder sb_uni =new StringBuilder();
+			for(int i = 0; i < arr.length(); i++){
+        	    String[] lime = new String[5];
+				JSONObject obj = arr.getJSONObject(i);
+				
+				String s_id       = obj.getString("id");
+				String s_item     = obj.getString("item");
+				sb_uni.append( s_item );
+				byte[] bb        = s_item.getBytes(enc);
+				s_item           = bb.toString();
+				sb.append(s_item  +", ");
+Log.d(TAG, "s_item=" +s_item);
+        	    m_LIST.add(s_item);
+			}
+Toast toast = Toast.makeText(this, "get_itemData=" + sb_uni.toString() + " :SJIS="  +sb.toString(), Toast.LENGTH_SHORT);
+toast.show();
+    	}catch(Exception e){
+    		throw e;
+    	}
+	}    
     //
 	private void get_itemData(String url) throws Exception{
     	try
@@ -238,6 +309,51 @@ for(int i= 0; i < s_msg.length(); i++){
     			return;
     		}
     		PrintRecieptMini();
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    }
+    private void proc_print04(String title){
+    	try
+    	{
+Log.d(TAG, "proc_print04");
+    		get_itemData_sjis(m_STR_url03, "SJIS");
+    		if(m_LIST.size() < 1){
+        		m_Util.errorDialog(this, "Item data is Nothing");
+    			return;
+    		}
+    		PrintRecieptMini();
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    }
+    private void proc_print05(String title){
+    	try
+    	{
+Log.d(TAG, "proc_print05");
+    		get_itemData_sjis(m_STR_url03, "MS932");
+    		if(m_LIST.size() < 1){
+        		m_Util.errorDialog(this, "Item data is Nothing");
+    			return;
+    		}
+    		PrintRecieptMini();
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    }
+    private void proc_print06(String title){
+    	try
+    	{
+Log.d(TAG, "proc_print06");
+			get_itemData(m_STR_url03);
+    		if(m_LIST.size() < 1){
+        		m_Util.errorDialog(this, "Item data is Nothing");
+    			return;
+    		}
+    		PrintRecieptMini_sjis();
     	}catch(Exception e){
     		e.printStackTrace();
     	}
@@ -303,6 +419,83 @@ for(int i= 0; i < s_msg.length(); i++){
             byte[] data = buffer.getBytes();
             
             port.writePort(data, 0, data.length);
+            try
+            {
+            	Thread.sleep(2000);
+            }
+            catch(InterruptedException e)
+            {
+            	
+            }
+    	}
+    	catch(StarIOPortException e)
+    	{
+    		Builder dialog = new AlertDialog.Builder(this);
+			dialog.setNegativeButton("Ok", null);
+			AlertDialog alert = dialog.create();
+			alert.setTitle(e.getMessage());
+			alert.show(); 
+    	}
+    	finally
+    	{
+    		if(port != null)
+    		{
+    			try
+    			{
+    				StarIOPort.releasePort(port);
+    			}
+    			catch(StarIOPortException e)
+    			{
+    				
+    			}
+    		}
+    	}
+    }
+    //
+    private void PrintRecieptMini_sjis()
+    {
+    	StarIOPort port = null;
+    	try
+    	{
+    		port = StarIOPort.getPort(portName, portSettings, 5000);
+    		
+    		String buffer = "\u001b\u0040";                     //Initialize printer Pg. 1-43
+    		buffer = buffer + "\u001b\u0061\u0001";             //Center Alignment - Refer to Pg. 1-18
+            buffer = buffer + "Star Clothing Boutique\n";
+            buffer = buffer + "1150 King Georges Post Rd.\n";
+            buffer = buffer + "Edison, NJ 08837\n\n";
+            buffer = buffer + "\u001b\u0061\u0000";             //Left Alignment - Refer to Pg. 1-18
+            buffer = buffer + "\u001b\u0044\u0001\u0008\u0017\u0000";      //Setting Horizontal Tab - Pg. 1-19
+            buffer = buffer + "Date: 12/31/2008 " + " Time: 9:10 PM\n";      //Moving Horizontal Tab - Pg. 1-19
+            buffer = buffer + "-------------------------------- \n";
+            buffer = buffer + "\u001b\u0045\u0001";                    //Select Emphasized Printing - Pg.  1-13
+            buffer = buffer + "SALE\n";
+            buffer = buffer + "\u001b\u0045\u0000";                    //Cancel Emphasized Printing - Pg. 1-13
+            for(int i=0; i< m_LIST.size(); i++){
+            	String s_item = m_LIST.get(i); 
+                buffer = buffer + "30067" + "\u0009" + s_item  + "\u0009" + " 10.99\n";
+            }
+            buffer = buffer + "Subtotal" + "\u0009" + "\u0009" + "156.95\n";
+            buffer = buffer + "Tax" + "\u0009" + "\u0009" + " 00.00\n";
+            buffer = buffer + "--------------------------------\n";
+            buffer = buffer + "\u001b\u0044\u0016\u0000";      //Setting Horizontal Tab - Pg. 1-19
+            buffer = buffer + "Total" + "\u0009" + "\u0009" + "\u001b\u0021\u0012" + "$156.95\n";    //Character Size - Pg. 1-14
+            buffer = buffer + "\u001b\u0021\u0000";                                                          //Cancel Expansion - Pg. 1-14
+            buffer = buffer + "--------------------------------\n";
+            buffer = buffer + "Charge\n" + "$159.95\n";
+            buffer = buffer + "Visa XXXX-XXXX-XXXX-0123\n\n";
+            buffer = buffer + "\u001d\u0042\u0001" + "Refunds and Exchanges" + "\u001d\u0042\u0000\n";                       //Specify/Cancel White/Black Invert - Pg. 1-15
+            buffer = buffer + "Within " + "\u001b\u002d\u0001" + "30 days" + "\u001b\u002d\u0000" + " with receipt\n"; //Specify/Cancel Underline Printing - Pg. 1-12
+            buffer = buffer + "And tags attached\n\n";
+            buffer = buffer + "          \u001d\u0068\u0030\u001d\u0077\u0001\u001d\u006b\u0049\u000c" + " 12ab34cd56 " + "\n\n\n\n\n";             //Barcode - Pg.1-33 - 1-36
+            
+            try
+            {
+                byte[] data = buffer.getBytes("SJIS");
+                port.writePort(data, 0, data.length);
+            }catch(Exception e){
+            	e.printStackTrace();
+            }
             try
             {
             	Thread.sleep(2000);
