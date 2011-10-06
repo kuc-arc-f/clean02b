@@ -38,6 +38,7 @@ public class ItemPR {
 
 	private String m_FOT_DKingakuK;
 	private String m_FOT_MaebaraiGaku;
+	private String m_FOT_Uchizei;
 	private String m_FOT_azuka;
 	private String m_FOT_watasi;
 	
@@ -97,6 +98,7 @@ public class ItemPR {
 
 		m_FOT_DKingakuK      = "";
 		m_FOT_MaebaraiGaku      = "";
+		m_FOT_Uchizei    ="";
 		m_FOT_azuka      = "";
 		m_FOT_watasi      = "";
 		
@@ -185,6 +187,8 @@ public class ItemPR {
 	public void setFOT_DKingakuK(String src) { m_FOT_DKingakuK = src; }
 	public String getFOT_MaebaraiGaku() { return m_FOT_MaebaraiGaku; }
 	public void setFOT_MaebaraiGaku(String src) { m_FOT_MaebaraiGaku = src; }
+	public String getFOT_Uchizei() { return m_FOT_Uchizei; }
+	public void setFOT_Uchizei(String src) { m_FOT_Uchizei = src; }
 	public String getFOT_azuka() { return m_FOT_azuka; }
 	public void setFOT_azuka(String src) { m_FOT_azuka = src; }
 	public String getFOT_watasi() { return m_FOT_watasi; }

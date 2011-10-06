@@ -39,7 +39,8 @@ public class TAB001Activity extends Activity {
 	private String        m_STR_url       ="http://esj-clean.main.jp/dev2/php/tst4.php";
 	private String        m_STR_url02     ="http://esj-clean.main.jp/dev2/php/tst5.php";
 	private String        m_STR_url03     ="http://esj-clean.main.jp/dev2/php/tst6.php";
-	private String        m_STR_url07     ="http://esj-clean.main.jp/dev2/php/tst7.php?id=1";
+//	private String        m_STR_url07      ="http://esj-clean.main.jp/dev2/php/tst7.php?id=1";
+	private String        m_STR_url08     ="http://esj-clean.main.jp/dev2/php/tst8.php?id=1";
 	private ArrayList<String>    m_LIST = new ArrayList<String>();
 	private ArrayList<ItemPR>    m_ListPR = new ArrayList<ItemPR>();
 	//
@@ -286,6 +287,7 @@ toast.show();
 				
 				String s_FOT_DKingakuK       = obj.getString("FOT_DKingakuK");
 				String s_FOT_MaebaraiGaku    = obj.getString("FOT_MaebaraiGaku");
+				String s_FOT_Uchizei         = obj.getString("FOT_Uchizei");
 				String s_FOT_azuka           = obj.getString("FOT_azuka");
 				String s_FOT_watasi          = obj.getString("FOT_watasi");
 				
@@ -343,6 +345,7 @@ toast.show();
 				
 				item.setFOT_DKingakuK( s_FOT_DKingakuK);
 				item.setFOT_MaebaraiGaku( s_FOT_MaebaraiGaku );
+				item.setFOT_Uchizei( s_FOT_Uchizei);
 				item.setFOT_azuka( s_FOT_azuka);
 				item.setFOT_watasi( s_FOT_watasi);
 				
@@ -520,7 +523,7 @@ Log.d(TAG, "proc_print06");
     	try
     	{
 Log.d(TAG, "proc_print07");
-			get_itemData02( m_STR_url07 );
+			get_itemData02( m_STR_url08 );
     		if(m_ListPR.size() < 1){
         		m_Util.errorDialog(this, "Item data is Nothing");
     			return;
@@ -567,8 +570,8 @@ Log.d(TAG, "proc_print07");
             buffer = buffer + item.getHED_CustName() + " 様 " + item.getHED_Point() + " ﾎﾟｲﾝﾄ"+ "\n";
             buffer = buffer + "お渡し予定 " + item.getHED_ShiagariYMD() + " " + item.getHED_ShiagariHM()+ "\n";
             buffer = buffer + "-------------------------------- \n";
-            buffer = buffer + "伝票No. "+ item.getHED_DenpyoNo() +"\n";
             buffer = buffer + "\u001b\u0061\u0000";             //Left Alignment - Refer to Pg. 1-18
+            buffer = buffer + "伝票No. "+ item.getHED_DenpyoNo() +"\n";
             buffer = buffer + "品　　　名\n";
             buffer = buffer + "\u001b\u0061\u0002";             //Riht Alignment
             buffer = buffer + "点数　　　　単価　　　　　金額\n";
@@ -594,8 +597,9 @@ Log.d(TAG, "proc_print07");
             }
             buffer = buffer + "--------------------------------\n";
             buffer = buffer + "合計(残金分)" + "\u0009" + "\u0009" +  item.getFOT_DKingakuK() +"\n";
-            buffer = buffer + "お預かり"     + "\u0009" + "\u0009" +  item.getFOT_azuka() +"\n";
+            buffer = buffer + "内消費税"     + "\u0009" + "\u0009" +  item.getFOT_Uchizei() +"\n";
             buffer = buffer + "お返し"       + "\u0009" + "\u0009" +  item.getFOT_watasi() +"\n";
+            buffer = buffer + "お預かり"     + "\u0009" + "\u0009" +  item.getFOT_azuka() +"\n";
             buffer = buffer + "\n";
             buffer = buffer + "--------------------------------\n";
             //AD1
@@ -612,6 +616,9 @@ Log.d(TAG, "proc_print07");
             buffer = buffer + item.getAD1_AdChar3()+ "\n";
             buffer = buffer + item.getAD1_AdChar4()+ "\n";
             buffer = buffer + "--------------------------------\n";
+            buffer = buffer + "\n";
+            buffer = buffer + "\n";
+            buffer = buffer + "\n";
 //            buffer = buffer + "Subtotal" + "\u0009" + "\u0009" + "156.95\n";
 //            buffer = buffer + "Tax" + "\u0009" + "\u0009" + " 00.00\n";
 //            buffer = buffer + "--------------------------------\n";
@@ -625,7 +632,6 @@ Log.d(TAG, "proc_print07");
 //            buffer = buffer + "Within " + "\u001b\u002d\u0001" + "30 days" + "\u001b\u002d\u0000" + " with receipt\n"; //Specify/Cancel Underline Printing - Pg. 1-12
 //            buffer = buffer + "And tags attached\n\n";
 //            buffer = buffer + "          \u001d\u0068\u0030\u001d\u0077\u0001\u001d\u006b\u0049\u000c" + " 12ab34cd56 " + "\n\n\n\n\n";             //Barcode - Pg.1-33 - 1-36
-            
 Log.d(TAG, "buffer=" +buffer);
             try
             {
@@ -703,8 +709,8 @@ Log.d(TAG, "PrintRecieptMini_07");
             buffer = buffer + item.getHED_CustName() + " 様 " + item.getHED_Point() + " ﾎﾟｲﾝﾄ"+ "\n";
             buffer = buffer + "お渡し予定 " + item.getHED_ShiagariYMD() + " " + item.getHED_ShiagariHM()+ "\n";
             buffer = buffer + "-------------------------------- \n";
-            buffer = buffer + "伝票No. "+ item.getHED_DenpyoNo() +"\n";
             buffer = buffer + "\u001b\u0061\u0000";             //Left Alignment - Refer to Pg. 1-18
+            buffer = buffer + "伝票No. "+ item.getHED_DenpyoNo() +"\n";
             buffer = buffer + "品　　　名\n";
             buffer = buffer + "\u001b\u0061\u0002";             //Riht Alignment
             buffer = buffer + "点数　　　　単価　　　　　金額\n";
@@ -719,8 +725,9 @@ Log.d(TAG, "PrintRecieptMini_07");
             }
             buffer = buffer + "--------------------------------\n";
             buffer = buffer + "合計(残金分)" + "\u0009" + "\u0009" +  item.getFOT_DKingakuK() +"\n";
-            buffer = buffer + "お預かり"     + "\u0009" + "\u0009" +  item.getFOT_azuka() +"\n";
+            buffer = buffer + "内消費税"     + "\u0009" + "\u0009" +  item.getFOT_Uchizei() +"\n";
             buffer = buffer + "お返し"       + "\u0009" + "\u0009" +  item.getFOT_watasi() +"\n";
+            buffer = buffer + "お預かり"     + "\u0009" + "\u0009" +  item.getFOT_azuka() +"\n";
             buffer = buffer + "\n";
             buffer = buffer + "--------------------------------\n";
             //AD1
@@ -737,7 +744,9 @@ Log.d(TAG, "PrintRecieptMini_07");
             buffer = buffer + item.getAD1_AdChar3()+ "\n";
             buffer = buffer + item.getAD1_AdChar4()+ "\n";
             buffer = buffer + "--------------------------------\n";    
-            
+            buffer = buffer + "\n";
+            buffer = buffer + "\n";
+            buffer = buffer + "\n";
 //Log.d(TAG, "buffer=" +buffer);
             try
             {
