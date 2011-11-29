@@ -9,8 +9,10 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -41,8 +43,11 @@ public class TAB001Activity extends Activity {
 	private String        m_STR_url03     ="http://esj-clean.main.jp/dev2/php/tst6.php";
 //	private String        m_STR_url07      ="http://esj-clean.main.jp/dev2/php/tst7.php?id=1";
 	private String        m_STR_url08     ="http://esj-clean.main.jp/dev2/php/tst8.php?id=1";
+	private String        m_ERROR         ="";
+	
 	private ArrayList<String>    m_LIST = new ArrayList<String>();
 	private ArrayList<ItemPR>    m_ListPR = new ArrayList<ItemPR>();
+	private ProgressDialog  mProgressDialog;
 	//
 	private jp.co.esourcejapan.fw.HttpUtil m_Http = new HttpUtil();
 	private jp.co.esourcejapan.fw.ComUtil m_Util  = new ComUtil();
@@ -523,12 +528,16 @@ Log.d(TAG, "proc_print06");
     	try
     	{
 Log.d(TAG, "proc_print07");
-			get_itemData02( m_STR_url08 );
+			PrintTask tsk = new PrintTask();
+			tsk.execute( );
+			/*
+ 			get_itemData02( m_STR_url08 );
     		if(m_ListPR.size() < 1){
         		m_Util.errorDialog(this, "Item data is Nothing");
     			return;
     		}
     		PrintRecieptMini_07();
+			 */
     	}catch(Exception e){
     		e.printStackTrace();
     	}
@@ -598,8 +607,8 @@ Log.d(TAG, "proc_print07");
             buffer = buffer + "--------------------------------\n";
             buffer = buffer + "合計(残金分)" + "\u0009" + "\u0009" +  item.getFOT_DKingakuK() +"\n";
             buffer = buffer + "内消費税"     + "\u0009" + "\u0009" +  item.getFOT_Uchizei() +"\n";
-            buffer = buffer + "お返し"       + "\u0009" + "\u0009" +  item.getFOT_watasi() +"\n";
             buffer = buffer + "お預かり"     + "\u0009" + "\u0009" +  item.getFOT_azuka() +"\n";
+            buffer = buffer + "お返し"       + "\u0009" + "\u0009" +  item.getFOT_watasi() +"\n";
             buffer = buffer + "\n";
             buffer = buffer + "--------------------------------\n";
             //AD1
@@ -726,8 +735,8 @@ Log.d(TAG, "PrintRecieptMini_07");
             buffer = buffer + "--------------------------------\n";
             buffer = buffer + "合計(残金分)" + "\u0009" + "\u0009" +  item.getFOT_DKingakuK() +"\n";
             buffer = buffer + "内消費税"     + "\u0009" + "\u0009" +  item.getFOT_Uchizei() +"\n";
-            buffer = buffer + "お返し"       + "\u0009" + "\u0009" +  item.getFOT_watasi() +"\n";
             buffer = buffer + "お預かり"     + "\u0009" + "\u0009" +  item.getFOT_azuka() +"\n";
+            buffer = buffer + "お返し"       + "\u0009" + "\u0009" +  item.getFOT_watasi() +"\n";
             buffer = buffer + "\n";
             buffer = buffer + "--------------------------------\n";
             //AD1
@@ -948,6 +957,7 @@ Log.d(TAG, "PrintRecieptMini_07");
     public boolean onCreateOptionsMenu(Menu menu){
     	boolean result = super.onCreateOptionsMenu(menu);
     	menu.add(0, MENU1_ID, Menu.NONE, "Setting");
+    	menu.add(0, MENU2_ID, Menu.NONE, "About").setIcon(android.R.drawable.ic_menu_info_details );
     	
     	return result;
     }
@@ -958,6 +968,10 @@ Log.d(TAG, "PrintRecieptMini_07");
     	case MENU1_ID :
         	Intent myIntent = new Intent(this, Settings.class);
             startActivityForResult(myIntent, 0); 
+    		return true;
+    	case MENU2_ID :
+    		intent = new Intent(this, TAB002Activity.class);
+    		startActivity(intent); 
     		return true;
     	}
     	return super.onOptionsItemSelected(item);
@@ -979,7 +993,48 @@ Log.d(TAG, "PrintRecieptMini_07");
     public static void setPortSettings(String pSettings)
     {
     	portSettings = pSettings;
-    }    
+    }
+    //
+	public class PrintTask extends AsyncTask<Void, Void, Void> {
+		@Override
+		protected void onPreExecute() {
+			m_ERROR ="";
+			mProgressDialog = new ProgressDialog( TAB001Activity.this );
+//			mProgressDialog.setMessage("Now Loading...");
+			mProgressDialog.setMessage("Print Now...");
+			mProgressDialog.show();
+		}
+		@Override
+		protected Void doInBackground(Void... params) {
+			try
+			{
+				get_itemData02( m_STR_url08 );
+	    		if(m_ListPR.size() < 1){
+	    			m_ERROR ="Item data is Nothing";
+	    			return null;
+	    		}
+			} catch (Exception e) {
+				e.printStackTrace();
+				mProgressDialog.dismiss();
+			}
+			return null;
+		}
+		@Override
+		protected void onPostExecute(Void result) {
+			try
+			{
+				mProgressDialog.dismiss();
+				if(m_ERROR.length() > 0){
+					Toast toast = Toast.makeText( TAB001Activity.this, m_ERROR, Toast.LENGTH_SHORT);
+					toast.show();
+					return;
+				}
+	    		PrintRecieptMini_07();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}    
     
     
 }
